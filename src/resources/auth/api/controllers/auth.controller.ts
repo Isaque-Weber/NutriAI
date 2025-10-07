@@ -10,7 +10,7 @@ import { UserRole } from '../../../../@shared/enums/user-role.enum';
 export class AuthController {
   constructor(
     private readonly registerNutritionist: RegisterNutritionistUseCase,
-    private readonly createPatient: CreatePatientUseCase,
+    private readonly createPatientUseCase: CreatePatientUseCase,
   ) {}
 
   @Post('register')
@@ -23,6 +23,6 @@ export class AuthController {
   @Post('patients')
   async createPatient(@Request() req, @Body() body) {
     const nutritionistId = req.user.id;
-    return this.createPatient.execute({ ...body, nutritionistId });
+    return this.createPatientUseCase.execute({ ...body, nutritionistId });
   }
 }
