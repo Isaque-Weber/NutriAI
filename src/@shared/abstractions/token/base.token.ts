@@ -22,6 +22,16 @@ export abstract class BaseToken<Payload> {
     }
   }
 
+  public sign(payload: Payload): string {
+    // implementação real (jsonwebtoken, jose, etc)
+    return 'jwt';
+  }
+
+  public verify(token: string): Payload {
+    // implementação real
+    return {} as Payload;
+  }
+
   decodeToken(token: string): Payload {
     try {
       return jwt.decode(token) as Payload;
