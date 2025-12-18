@@ -3,7 +3,6 @@ import { env } from '@config/envs/env.validation';
 
 export type RefreshTokenPayload = {
   sub: string;
-  organizationId: string | null;
 };
 
 export type RefreshTokenFactory = {

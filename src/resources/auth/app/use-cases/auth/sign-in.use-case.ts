@@ -8,7 +8,6 @@ import { ACCESS_TOKEN } from '../../../domain/tokens/access.token';
 import { REFRESH_TOKEN } from '../../../domain/tokens/refresh.token';
 import type { AccessTokenFactory } from '../../../domain/tokens/access.token';
 import type { RefreshTokenFactory } from '../../../domain/tokens/refresh.token';
-import { OrganizationMemberRepository } from '../../../../organizations/domain/repositories/organization-member.repositories';
 
 export type SignInUseCaseInput = {
   email: string;
@@ -28,7 +27,6 @@ export class SignInUseCase extends BaseUseCase<
   constructor(
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
-    private readonly organizationMemberRepository: OrganizationMemberRepository,
 
     @Inject(ACCESS_TOKEN)
     private readonly accessToken: AccessTokenFactory,
@@ -60,14 +58,8 @@ export class SignInUseCase extends BaseUseCase<
   }
 
   private async generateCredentials(user: User): Promise<SignInUseCaseOutput> {
-    const member =
-      await this.organizationMemberRepository.findDefaultOrganizationByUserId(
-        user.id,
-      );
-
     const payload = {
       sub: user.id,
-      organizationId: member?.organizationId ?? null,
     };
 
     const accessToken = this.accessToken.sign(payload);

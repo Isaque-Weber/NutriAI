@@ -18,11 +18,8 @@ import { UpdateUserProfileUseCase } from '../../app/use-cases/user/update-user-p
 import { UploadAvatarUseCase } from '../../app/use-cases/user/upload-avatar.use-case';
 import { DeleteUserUseCase } from '../../app/use-cases/user/delete-user.use-case';
 import { UpdateUserProfileDto } from '../dtos/user/update-user-profile.dto';
-import { UpdateUserPreferencesDto } from '../dtos/user/update-user-preferences.dto';
 import { SetPasswordDto } from '../dtos/user/set-password.dto';
-import { UpdateUserPreferencesUseCase } from '../../app/use-cases/user/update-user-preferences.use-case';
 import { SetPasswordUseCase } from '../../app/use-cases/user/set-password.use-case';
-import { Request } from 'express';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -32,12 +29,11 @@ export class UserController {
     private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
     private readonly uploadAvatarUseCase: UploadAvatarUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly updateUserPreferencesUseCase: UpdateUserPreferencesUseCase,
     private readonly setPasswordUseCase: SetPasswordUseCase,
   ) {}
 
   @Get('profile')
-  async getProfile(@Req() req: Request) {
+  async getProfile(@Req() req: any) {
     const userId = req.user?.id!;
     return this.getUserProfileUseCase.execute({
       userId,
@@ -46,7 +42,7 @@ export class UserController {
 
   @Put('profile')
   async updateProfile(
-    @Req() req: Request,
+    @Req() req: any,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
     const userId = req.user?.id!;
@@ -56,21 +52,9 @@ export class UserController {
     });
   }
 
-  @Put('preferences')
-  async updatePreferences(
-    @Req() req: Request,
-    @Body() updateUserPreferencesDto: UpdateUserPreferencesDto,
-  ) {
-    const userId = req.user?.id!;
-    return this.updateUserPreferencesUseCase.execute({
-      userId,
-      ...updateUserPreferencesDto,
-    });
-  }
-
   @Put('password')
   async setPassword(
-    @Req() req: Request,
+    @Req() req: any,
     @Body() setPasswordDto: SetPasswordDto,
   ) {
     const userId = req.user?.id!;
@@ -83,7 +67,7 @@ export class UserController {
   @Put('avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadAvatar(
-    @Req() req: Request,
+    @Req() req: any,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const userId = req.user?.id!;
@@ -98,7 +82,7 @@ export class UserController {
   }
 
   @Delete('profile')
-  async deleteAccount(@Req() req: Request) {
+  async deleteAccount(@Req() req: any) {
     const userId = req.user?.id!;
     return this.deleteUserUseCase.execute({
       userId,

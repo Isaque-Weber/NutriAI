@@ -16,7 +16,7 @@ export class CreatePatientUseCase {
     const existing = await this.userRepo.findByEmail(input.email);
     if (existing) throw new Error('Email já cadastrado.');
 
-    const user = await this.userRepo.createUser({
+    const user = await this.userRepo.createAndSave({
       ...input,
       role: UserRole.PATIENT,
       nutritionistId: input.nutritionistId,

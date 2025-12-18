@@ -58,16 +58,6 @@ export class UpdateUserProfileUseCase {
 
     if (request.phoneNumber !== undefined) {
       user.phoneNumber = request.phoneNumber;
-
-      if (!this.isValidPhoneNumber(request.phoneNumber)) {
-        user.preferences = {
-          ...user.preferences,
-          communication: {
-            ...user.preferences.communication,
-            whatsapp: false,
-          },
-        };
-      }
     }
 
     const updatedUser = await this.userRepository.save(user);

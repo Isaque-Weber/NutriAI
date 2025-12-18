@@ -41,7 +41,7 @@ export class RefreshTokenUseCase extends BaseUseCase<
   async execute(
     input: RefreshTokenUseCaseInput,
   ): Promise<RefreshTokenUseCaseOutput> {
-    let payload: { sub: string; organizationId: string | null };
+    let payload: { sub: string };
 
     try {
       payload = this.refreshTokenFactory.verify(input.refreshToken);
@@ -54,29 +54,14 @@ export class RefreshTokenUseCase extends BaseUseCase<
       throw new UnauthorizedException('O refresh token é inválido.');
     }
 
-    /**
-     * (Opcional, mas recomendado)
-     * Validação contra banco para garantir que o refresh token não foi revogado
-     */
-    // const exists = await this.tokenRepository.exists(
-    //   user.id,
-    //   TokenType.REFRESH_TOKEN,
-    //   input.refreshToken,
-    // );
-    // if (!exists) {
-    //   throw new UnauthorizedException('Refresh token revogado');
-    // }
-
-    return this.generateCredentials(user, payload.organizationId);
+    return this.generateCredentials(user);
   }
 
   private async generateCredentials(
     user: User,
-    organizationId: string | null,
   ): Promise<RefreshTokenUseCaseOutput> {
     const payload = {
       sub: user.id,
-      organizationId,
     };
 
     const accessToken = this.accessTokenFactory.sign(payload);

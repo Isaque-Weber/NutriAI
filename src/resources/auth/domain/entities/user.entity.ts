@@ -3,6 +3,7 @@ import { BaseEntity } from '@shared/abstractions/typeorm/base.entity';
 import { Account } from './account.entity';
 import { Token } from './token.entity';
 import { UserRole } from '@shared/enums/user-role.enum';
+import { Patient } from '../../../clinical/domain/entities/patient.entity';
 import Hasher from '@shared/utils/hasher/hasher';
 import { UnauthorizedException } from '@nestjs/common';
 
@@ -35,8 +36,8 @@ export class User extends BaseEntity {
   @ManyToOne(() => User, (user) => user.patients)
   nutritionist?: User;
 
-  @OneToMany(() => User, (user) => user.nutritionist)
-  patients: User[];
+  @OneToMany(() => Patient, (patient) => patient.nutritionist)
+  patients: Patient[];
 
   @OneToMany(() => Account, (acc) => acc.user)
   accounts: Account[];

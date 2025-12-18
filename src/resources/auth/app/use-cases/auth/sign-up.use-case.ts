@@ -68,7 +68,6 @@ export class SignUpUseCase extends BaseUseCase<
 
     const payload = {
       sub: user.id,
-      organizationId: null,
     };
 
     // 4. Gerar tokens

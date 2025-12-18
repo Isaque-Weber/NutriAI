@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../../../domain/repositories/user.repository';
-import { User, UserPreferences } from '../../../domain/entities/user.entity';
+import { User } from '../../../domain/entities/user.entity';
 
 export interface GetUserProfileRequest {
   userId: string;
@@ -13,7 +13,6 @@ export interface GetUserProfileResponse {
   email: string;
   phoneNumber?: string;
   avatarUrl?: string;
-  preferences: UserPreferences;
   hasPassword: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -41,7 +40,6 @@ export class GetUserProfileUseCase {
       email: user.email,
       phoneNumber: user.phoneNumber,
       avatarUrl: user.avatarUrl ?? user.accounts[0]?.providerAvatarUrl,
-      preferences: user.preferences,
       hasPassword: !!user.password,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
