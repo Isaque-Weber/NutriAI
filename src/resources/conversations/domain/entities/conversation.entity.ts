@@ -16,4 +16,13 @@ export class Conversation extends BaseEntity {
 
   @OneToMany(() => Message, (msg) => msg.conversation)
   messages!: Message[];
+
+  addMessage(msg: Partial<Message>) {
+    if (!this.messages) this.messages = [];
+    const message = new Message();
+    Object.assign(message, msg);
+    message.conversation = this;
+    this.messages.push(message);
+    return message;
+  }
 }

@@ -2,11 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { MessageRole } from '../../../conversations/domain/entities/message.entity';
 import { ConversationRepository } from '../../../conversations/domain/repositories/conversation.repository';
-import { PromptRepository } from '../../../assistants/domain/repositories/prompt.repositories';
 import { InferenceService } from '../../services/inference.service';
-import { ConnectionToolRepository } from '../../../assistants/domain/repositories/connection-tool.repositories';
 import { DynamicStructuredTool } from '@langchain/core/tools';
-import { ConnectionTool } from '../../../assistants/domain/entities/connection-tool.entity';
 import axios from 'axios';
 import { jsonSchemaToZod } from 'json-schema-to-zod';
 

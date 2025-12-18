@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Conversation } from '../../conversations/domain/entities/conversation.entity';
 import {
   Message,
@@ -13,15 +17,31 @@ import {
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { engine } from './factories/engine.factory';
 import { ConfigService } from '@nestjs/config';
+import { PatientRepository } from '../../clinical/domain/repositories/patient.repository';
+import { AnamnesisRepository } from '../../clinical/domain/repositories/anamnesis.repository';
+import { AnthropometricAssessmentRepository } from '../../clinical/domain/repositories/anthropometric-assessment.repository';
+import { createClinicalTools } from '../tools/clinical.tools';
+import { KnowledgeService } from './knowledge.service';
+import { AutoRetrievalService } from './auto-retrieval.service';
+import { createKnowledgeTool } from '../tools/knowledge.tool';
 
 @Injectable()
 export class InferenceService {
   private readonly DEFAULT_SYSTEM_PROMPT = `Você é o NutriAI, um assistente virtual especializado em nutrição.
 Seu objetivo é ajudar nutricionistas e pacientes com dúvidas sobre alimentação, saúde e bem-estar.
+Você tem acesso a ferramentas para consultar dados clínicos do paciente atual e uma base de conhecimento global.
+Use-as sempre que precisar de informações precisas ou técnicas.
 Seja sempre cordial, profissional e baseie suas respostas em evidências científicas quando possível.
 Se não souber a resposta, admita e sugira que o usuário procure um profissional.`;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly patientRepository: PatientRepository,
+    private readonly anamnesisRepository: AnamnesisRepository,
+    private readonly assessmentRepository: AnthropometricAssessmentRepository,
+    private readonly knowledgeService: KnowledgeService,
+    private readonly autoRetrievalService: AutoRetrievalService,
+  ) {}
 
   async executeInference(conversation: Conversation) {
     const lastMessage = conversation.messages[conversation.messages.length - 1];
@@ -31,22 +51,49 @@ Se não souber a resposta, admita e sugira que o usuário procure um profissiona
         `[${InferenceService.name}] A última mensagem da conversa não é de usuário.`,
       );
 
+    const userMessage = lastMessage.content || '';
+
+    // Get patient info for context and multi-tenancy check
+    const patient = await this.patientRepository.findOneById(
+      conversation.patientId,
+    );
+    if (!patient) throw new NotFoundException('Paciente não encontrado');
+
+    const nutritionistId = patient.nutritionistId;
+
+    // Get relevant global context via Auto-Retrieval
+    const globalContext =
+      await this.autoRetrievalService.getRelevantContext(userMessage);
+
     const messages = this.convertToLangChainMessages(conversation.messages);
 
     const apiKey = this.configService.get<string>('OPENROUTER_API_KEY')!;
 
-    // Initialize the engine with default model
+    // Initialize the engine
     const llm = engine(apiKey);
 
-    // Create the agent (currently without tools, but ready for them)
+    // Create tools for this context
+    const clinicalTools = createClinicalTools(
+      this.patientRepository,
+      this.anamnesisRepository,
+      this.assessmentRepository,
+      nutritionistId,
+      conversation.patientId,
+    );
+
+    const knowledgeTool = createKnowledgeTool(this.knowledgeService);
+
+    const tools = [...clinicalTools, knowledgeTool];
+
+    // Create the agent with tools
     const agent = createReactAgent({
       llm,
-      tools: [], // Add tools here if needed in the future
+      tools,
     });
 
     const context = {
       user: {
-        name: conversation.patient?.name ?? 'Não identificado',
+        name: patient.name,
       },
       date: {
         dateCurrent: new Date().toLocaleDateString('pt-BR', {
@@ -68,7 +115,9 @@ Se não souber a resposta, admita e sugira que o usuário procure um profissiona
     
 Contexto do Usuário:
 Nome: ${context.user.name}
-Data Atual: ${context.date.dateCurrent} ${context.date.timeCurrent}`;
+Data Atual: ${context.date.dateCurrent} ${context.date.timeCurrent}
+
+${globalContext}`;
 
     const result = await agent.invoke({
       messages: [new SystemMessage(systemPrompt), ...messages],
@@ -81,7 +130,6 @@ Data Atual: ${context.date.dateCurrent} ${context.date.timeCurrent}`;
 
   private convertToLangChainMessages(messages: Message[]): BaseMessage[] {
     const langChainMessages: BaseMessage[] = [];
-    // Take last 20 messages to avoid hitting token limits
     const lastMessages = messages.slice(-20);
 
     for (const message of lastMessages) {
@@ -93,7 +141,6 @@ Data Atual: ${context.date.dateCurrent} ${context.date.timeCurrent}`;
         case MessageRole.ASSISTANT:
           langChainMessages.push(new AIMessage(content));
           break;
-        // Tool messages can be added here when tools are implemented
       }
     }
 
