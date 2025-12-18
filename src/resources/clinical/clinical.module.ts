@@ -16,6 +16,11 @@ import { AnamnesisController } from './api/controllers/anamnesis.controller';
 import { AnthropometricController } from './api/controllers/anthropometric.controller';
 import { DietPlanController } from './api/controllers/diet-plan.controller';
 import { ClinicalNoteController } from './api/controllers/clinical-note.controller';
+import { PatientService } from './services/patient.service';
+import { AnthropometricAssessmentService } from './services/anthropometric-assessment.service';
+import { AnamnesisService } from './services/anamnesis.service';
+import { DietPlanService } from './services/dietplan.service';
+import { ClinicalNoteService } from './services/clinical-note.service';
 
 @Module({
   imports: [
@@ -40,6 +45,11 @@ import { ClinicalNoteController } from './api/controllers/clinical-note.controll
     AnthropometricAssessmentRepository,
     DietPlanRepository,
     ClinicalNoteRepository,
+    PatientService,
+    AnthropometricAssessmentService,
+    AnamnesisService,
+    DietPlanService,
+    ClinicalNoteService,
   ],
   exports: [
     PatientRepository,
@@ -47,6 +57,11 @@ import { ClinicalNoteController } from './api/controllers/clinical-note.controll
     AnthropometricAssessmentRepository,
     DietPlanRepository,
     ClinicalNoteRepository,
+    PatientService,
+    AnthropometricAssessmentService,
+    AnamnesisService,
+    DietPlanService,
+    ClinicalNoteService,
   ],
 })
 export class ClinicalModule {}
