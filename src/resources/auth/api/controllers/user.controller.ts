@@ -53,10 +53,7 @@ export class UserController {
   }
 
   @Put('password')
-  async setPassword(
-    @Req() req: any,
-    @Body() setPasswordDto: SetPasswordDto,
-  ) {
+  async setPassword(@Req() req: any, @Body() setPasswordDto: SetPasswordDto) {
     const userId = req.user?.id!;
     return this.setPasswordUseCase.execute({
       userId,
