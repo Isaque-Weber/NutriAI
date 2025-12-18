@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { BaseUseCase } from '../../../../../@shared/abstractions/use-case/base.use-case';
+import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { TokenRepository } from '../../../domain/repositories/token.repository';
 import { TokenType } from '../../../domain/entities/token.entity';
-import { env } from '../../../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 import { AccessToken } from '../../../domain/tokens/access.token';
 import { RefreshToken } from '../../../domain/tokens/refresh.token';
 import { User } from '../../../domain/entities/user.entity';
-import { OrganizationMemberRepository } from '../../../../organizations/domain/repositories/organization-member.repository';
+import { OrganizationMemberRepository } from '../../../../organizations/domain/repositories/organization-member.repositories';
 
 export type SignInUseCaseInput = {
   email: string;

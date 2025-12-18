@@ -11,11 +11,8 @@ export class AccountRepository extends BaseRepository<Account> {
     super(repo);
   }
 
-  findByProviderAndAccountId(
-    provider: AccountProvider,
-    providerAccountId: string,
-  ) {
-    return this.repo.findOne({ where: { provider, providerAccountId } });
+  findByProviderAccountId(providerAccountId: string) {
+    return this.repo.findOne({ where: { providerAccountId } });
   }
 
   findByUserId(userId: string) {

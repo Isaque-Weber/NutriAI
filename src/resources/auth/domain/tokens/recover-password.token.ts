@@ -1,5 +1,5 @@
-import { env } from '../../../../@config/envs/env.config';
-import { BaseToken } from '../../../../@shared/abstractions/token/base.token';
+import { env } from '@config/envs/env.validation';
+import { BaseToken } from '@shared/abstractions/token/base.token';
 
 export type RecoverPasswordTokenPayload = {
   sub: string;

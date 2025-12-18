@@ -1,5 +1,5 @@
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
-import { env } from '../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 import { log } from '../../logging/logger';
 
 export interface SendDynamicTemplateEmailParams<TemplateData> {

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { env } from '../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 import { log } from '../../logging/logger';
 
 export enum BucketFolder {
@@ -11,7 +11,7 @@ export enum BucketFolder {
 }
 
 @Injectable()
-export class GoogleCloudStorageService {
+class GoogleCloudStorageService {
   private storage: Storage;
   private readonly bucketName: string;
 
@@ -95,7 +95,7 @@ export class GoogleCloudStorageService {
       // Extract filename from URL
       const fileName = fileUrl.split(`${targetBucket}/`)[1];
       if (!fileName) {
-        throw new Error('Invalid file URL');
+        throw new ForbiddenException('Invalid file URL');
       }
 
       const bucket = this.storage.bucket(targetBucket);
@@ -139,3 +139,5 @@ export class GoogleCloudStorageService {
     return allowedMimeTypes.includes(file.mimetype) && file.size <= maxSize;
   }
 }
+
+export default GoogleCloudStorageService;

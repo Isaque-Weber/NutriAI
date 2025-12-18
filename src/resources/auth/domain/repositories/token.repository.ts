@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from '../entities/token.entity';
 import { TokenType } from '../entities/token.entity';
-import { BaseRepository } from '../../../../@shared/abstractions/typeorm/base.repository';
+import { BaseRepository } from '@shared/abstractions/typeorm/base.repository';
 
 @Injectable()
 export class TokenRepository extends BaseRepository<Token> {
@@ -11,12 +11,16 @@ export class TokenRepository extends BaseRepository<Token> {
     super(repo);
   }
 
+  createToken(userId: string, type: TokenType, token: string) {
+    return this.repo.save({ userId, type, value: token });
+  }
+
   findByValue(value: string): Promise<Token | null> {
     return this.repo.findOne({ where: { value } });
   }
 
-  async deleteByUserAndType(userId: string, type: TokenType): Promise<void> {
-    await this.repo.delete({ userId, type });
+  deleteByUserIdAndType(userId: string, type: TokenType) {
+    return this.repo.delete({ userId, type });
   }
 
   async revokeAllTokens(userId: string): Promise<void> {

@@ -17,7 +17,7 @@ export abstract class BaseToken<Payload> {
   verifyToken(token: string): Payload {
     try {
       return jwt.verify(token, this.secret) as Payload;
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException();
     }
   }
@@ -25,7 +25,7 @@ export abstract class BaseToken<Payload> {
   decodeToken(token: string): Payload {
     try {
       return jwt.decode(token) as Payload;
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException();
     }
   }

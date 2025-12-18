@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../../../../@shared/abstractions/use-case/base.use-case';
+import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { TokenRepository } from '../../../domain/repositories/token.repository';
 import { TokenType } from '../../../domain/entities/token.entity';
 import { RecoverPasswordEmail } from '../../../domain/emails/recover-password.email';
 import { RecoverPasswordToken } from '../../../domain/tokens/recover-password.token';
-import { env } from '../../../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 
 export type RecoverPasswordUseCaseInput = {
   email: string;

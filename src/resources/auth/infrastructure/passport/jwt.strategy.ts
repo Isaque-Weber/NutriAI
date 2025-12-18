@@ -6,9 +6,9 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Request } from 'express';
-import { env } from '../../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { OrganizationMemberRepository } from '../../../organizations/domain/repositories/organization-member.repository';
+import { OrganizationMemberRepository } from '../../../organizations/domain/repositories/organization-member.repositories';
 import { AccessTokenPayload } from '../../domain/tokens/access.token';
 import { Organization } from '../../../organizations/domain/entities/organization.entity';
 import {

@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { env } from '../../../../@config/envs/env.config';
+import { env } from '@config/envs/env.validation';
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { AccountRepository } from '../../domain/repositories/account.repository';
 import { AccountProvider } from '../../domain/entities/account.entity';

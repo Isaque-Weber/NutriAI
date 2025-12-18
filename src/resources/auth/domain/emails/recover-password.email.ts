@@ -1,5 +1,5 @@
-import { env } from '../../../../@config/envs/env.config';
-import { BaseEmail } from '../../../../@shared/abstractions/email/base.email';
+import { env } from '@config/envs/env.validation';
+import { BaseEmail } from '@shared/abstractions/email/base.email';
 
 export type RecoverPasswordTemplateData = {
   username: string;

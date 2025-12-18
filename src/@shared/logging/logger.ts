@@ -1,6 +1,5 @@
 import pino, { LogFn } from 'pino';
 import { logs, SeverityNumber, AnyValueMap } from '@opentelemetry/api-logs';
-import { env } from '../../@config/envs/env.config';
 
 const otel = logs.getLogger('app');
 

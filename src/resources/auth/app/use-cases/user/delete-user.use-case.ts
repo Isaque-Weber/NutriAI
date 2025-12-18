@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../../../domain/repositories/user.repository';
-import { GoogleCloudStorageService } from '../../../../../@shared/infrastructure/storage/google-cloud-storage.service';
+import GoogleCloudStorageService from '../../../../../@shared/infrastructure/storage/google-cloud-storage.service';
 
 export interface DeleteUserRequest {
   userId: string;

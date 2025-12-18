@@ -1,5 +1,5 @@
-import { BaseToken } from '../../../../@shared/abstractions/token/base.token';
-import { env } from '../../../../@config/envs/env.config';
+import { BaseToken } from '@shared/abstractions/token/base.token';
+import { env } from '@config/envs/env.validation';
 
 export type RefreshTokenPayload = {
   sub: string;
