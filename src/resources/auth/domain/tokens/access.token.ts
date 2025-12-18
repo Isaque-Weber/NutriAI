@@ -3,7 +3,6 @@ import { BaseToken } from '@shared/abstractions/token/base.token';
 
 export type AccessTokenPayload = {
   sub: string;
-  organizationId: string | null;
 };
 
 export type AccessTokenFactory = {
