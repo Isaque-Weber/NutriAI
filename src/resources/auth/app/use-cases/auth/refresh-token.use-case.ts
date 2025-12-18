@@ -1,12 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { BaseUseCase } from '../../../../../@shared/abstractions/use-case/base.use-case';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { TokenRepository } from '../../../domain/repositories/token.repository';
-import { Token, TokenType } from '../../../domain/entities/token.entity';
-import { RefreshToken } from '../../../domain/tokens/refresh.token';
+import { TokenType } from '../../../domain/entities/token.entity';
 import { User } from '../../../domain/entities/user.entity';
-import { AccessToken } from '../../../domain/tokens/access.token';
-import { SignInUseCaseOutput } from './sign-in.use-case';
+
+import { ACCESS_TOKEN } from '../../../domain/tokens/access.token';
+import { REFRESH_TOKEN } from '../../../domain/tokens/refresh.token';
+
+import type { AccessTokenFactory } from '../../../domain/tokens/access.token';
+import type { RefreshTokenFactory } from '../../../domain/tokens/refresh.token';
 
 export type RefreshTokenUseCaseInput = {
   refreshToken: string;
@@ -25,6 +28,12 @@ export class RefreshTokenUseCase extends BaseUseCase<
   constructor(
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
+
+    @Inject(REFRESH_TOKEN)
+    private readonly refreshTokenFactory: RefreshTokenFactory,
+
+    @Inject(ACCESS_TOKEN)
+    private readonly accessTokenFactory: AccessTokenFactory,
   ) {
     super();
   }
@@ -32,37 +41,52 @@ export class RefreshTokenUseCase extends BaseUseCase<
   async execute(
     input: RefreshTokenUseCaseInput,
   ): Promise<RefreshTokenUseCaseOutput> {
-    const payload = RefreshToken.verifyToken(input.refreshToken);
+    let payload: { sub: string; organizationId: string | null };
 
-    const user = await this.userRepository.findOneById(payload.sub, {
-      relations: ['tokens'],
-    });
+    try {
+      payload = this.refreshTokenFactory.verify(input.refreshToken);
+    } catch {
+      throw new UnauthorizedException('O refresh token é inválido.');
+    }
 
-    if (!user) throw new UnauthorizedException('O refresh token é inválido.');
+    const user = await this.userRepository.findOneById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('O refresh token é inválido.');
+    }
 
-    // const userRefreshToken = user.tokens.find((token: Token) => token.type === TokenType.REFRESH_TOKEN && token.value === input.refreshToken);
-    // if (!userRefreshToken) throw new UnauthorizedException('Autenticação inválida');
+    /**
+     * (Opcional, mas recomendado)
+     * Validação contra banco para garantir que o refresh token não foi revogado
+     */
+    // const exists = await this.tokenRepository.exists(
+    //   user.id,
+    //   TokenType.REFRESH_TOKEN,
+    //   input.refreshToken,
+    // );
+    // if (!exists) {
+    //   throw new UnauthorizedException('Refresh token revogado');
+    // }
 
-    return this.generateCredentials(user, payload.organizationId ?? null);
+    return this.generateCredentials(user, payload.organizationId);
   }
 
-  async generateCredentials(
+  private async generateCredentials(
     user: User,
     organizationId: string | null,
-  ): Promise<SignInUseCaseOutput> {
-    const accessToken = AccessToken.generateToken({
+  ): Promise<RefreshTokenUseCaseOutput> {
+    const payload = {
       sub: user.id,
       organizationId,
-    });
-    const refreshToken = RefreshToken.generateToken({
-      sub: user.id,
-      organizationId,
-    });
+    };
+
+    const accessToken = this.accessTokenFactory.sign(payload);
+    const refreshToken = this.refreshTokenFactory.sign(payload);
 
     await this.tokenRepository.deleteByUserIdAndType(
       user.id,
       TokenType.REFRESH_TOKEN,
     );
+
     await this.tokenRepository.createToken(
       user.id,
       TokenType.REFRESH_TOKEN,

@@ -1,12 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { TokenRepository } from '../../../domain/repositories/token.repository';
 import { TokenType } from '../../../domain/entities/token.entity';
-import { env } from '@config/envs/env.validation';
-import { AccessToken } from '../../../domain/tokens/access.token';
-import { RefreshToken } from '../../../domain/tokens/refresh.token';
 import { User } from '../../../domain/entities/user.entity';
+import { ACCESS_TOKEN } from '../../../domain/tokens/access.token';
+import { REFRESH_TOKEN } from '../../../domain/tokens/refresh.token';
+import type { AccessTokenFactory } from '../../../domain/tokens/access.token';
+import type { RefreshTokenFactory } from '../../../domain/tokens/refresh.token';
 import { OrganizationMemberRepository } from '../../../../organizations/domain/repositories/organization-member.repositories';
 
 export type SignInUseCaseInput = {
@@ -28,6 +29,12 @@ export class SignInUseCase extends BaseUseCase<
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
     private readonly organizationMemberRepository: OrganizationMemberRepository,
+
+    @Inject(ACCESS_TOKEN)
+    private readonly accessToken: AccessTokenFactory,
+
+    @Inject(REFRESH_TOKEN)
+    private readonly refreshToken: RefreshTokenFactory,
   ) {
     super();
   }
@@ -52,24 +59,25 @@ export class SignInUseCase extends BaseUseCase<
     return this.generateCredentials(user);
   }
 
-  async generateCredentials(user: User): Promise<SignInUseCaseOutput> {
+  private async generateCredentials(user: User): Promise<SignInUseCaseOutput> {
     const member =
       await this.organizationMemberRepository.findDefaultOrganizationByUserId(
         user.id,
       );
-    const accessToken = AccessToken.generateToken({
+
+    const payload = {
       sub: user.id,
       organizationId: member?.organizationId ?? null,
-    });
-    const refreshToken = RefreshToken.generateToken({
-      sub: user.id,
-      organizationId: member?.organizationId ?? null,
-    });
+    };
+
+    const accessToken = this.accessToken.sign(payload);
+    const refreshToken = this.refreshToken.sign(payload);
 
     await this.tokenRepository.deleteByUserIdAndType(
       user.id,
       TokenType.REFRESH_TOKEN,
     );
+
     await this.tokenRepository.createToken(
       user.id,
       TokenType.REFRESH_TOKEN,

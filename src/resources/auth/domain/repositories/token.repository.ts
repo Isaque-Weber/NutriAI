@@ -19,6 +19,10 @@ export class TokenRepository extends BaseRepository<Token> {
     return this.repo.findOne({ where: { value } });
   }
 
+  findByUserIdAndType(userId: string, type: TokenType) {
+    return this.repo.findOne({ where: { userId, type } });
+  }
+
   deleteByUserIdAndType(userId: string, type: TokenType) {
     return this.repo.delete({ userId, type });
   }

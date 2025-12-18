@@ -6,16 +6,29 @@ export type RefreshTokenPayload = {
   organizationId: string | null;
 };
 
-class RefreshTokenFactory extends BaseToken<RefreshTokenPayload> {
-  constructor() {
-    super(env.TOKEN_REFRESH_SECRET, {
-      expiresIn: Number(env.TOKEN_REFRESH_EXPIRES_IN),
-    });
-  }
+export type RefreshTokenFactory = {
+  sign(payload: RefreshTokenPayload): string;
+  verify(token: string): RefreshTokenPayload;
+};
 
-  static create() {
-    return new RefreshTokenFactory();
-  }
-}
+export const REFRESH_TOKEN = Symbol('REFRESH_TOKEN');
 
-export const RefreshToken = RefreshTokenFactory.create();
+export const RefreshTokenProvider = {
+  provide: REFRESH_TOKEN,
+  useFactory: (): RefreshTokenFactory => {
+    class RefreshToken extends BaseToken<RefreshTokenPayload> {
+      constructor() {
+        super(env.TOKEN_REFRESH_SECRET, {
+          expiresIn: Number(env.TOKEN_REFRESH_EXPIRES_IN),
+        });
+      }
+    }
+
+    const token = new RefreshToken();
+
+    return {
+      sign: (payload) => token.sign(payload),
+      verify: (jwt) => token.verify(jwt),
+    };
+  },
+};

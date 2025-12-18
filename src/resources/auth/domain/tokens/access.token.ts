@@ -6,20 +6,29 @@ export type AccessTokenPayload = {
   organizationId: string | null;
 };
 
-class AccessTokenFactory extends BaseToken<AccessTokenPayload> {
-  constructor() {
-    super(env.TOKEN_ACCESS_SECRET, {
-      expiresIn: Number(env.TOKEN_ACCESS_EXPIRES_IN),
-    });
-  }
+export type AccessTokenFactory = {
+  sign(payload: AccessTokenPayload): string;
+  verify(token: string): AccessTokenPayload;
+};
 
-  static create() {
-    return new AccessTokenFactory();
-  }
-}
+export const ACCESS_TOKEN = Symbol('ACCESS_TOKEN');
 
-export const AccessToken = AccessTokenFactory.create();
+export const AccessTokenProvider = {
+  provide: ACCESS_TOKEN,
+  useFactory: (): AccessTokenFactory => {
+    class AccessToken extends BaseToken<AccessTokenPayload> {
+      constructor() {
+        super(env.TOKEN_ACCESS_SECRET, {
+          expiresIn: Number(env.TOKEN_ACCESS_EXPIRES_IN),
+        });
+      }
+    }
 
-// Middleware de autenticação -> Verificar se as permissões atuais são iguais as permissões do JWT.
-//     Se for diferente, retornar 401 -> refresh token do frontend.
-//     Se for igual, continuar.
+    const token = new AccessToken();
+
+    return {
+      sign: (payload) => token.sign(payload),
+      verify: (jwt) => token.verify(jwt),
+    };
+  },
+};

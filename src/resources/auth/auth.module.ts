@@ -14,10 +14,8 @@ import { Token } from './domain/entities/token.entity';
 import { UserRepository } from './domain/repositories/user.repository';
 import { AccountRepository } from './domain/repositories/account.repository';
 import { TokenRepository } from './domain/repositories/token.repository';
-
-import { AccessToken } from './domain/tokens/access.token';
-import { RefreshToken } from './domain/tokens/refresh.token';
-import { RecoverPasswordToken } from './domain/tokens/recover-password.token';
+import { RefreshTokenProvider } from './domain/tokens/refresh.token';
+import { RecoverPasswordTokenProvider } from './domain/tokens/recover-password.token';
 
 import { JwtStrategy } from './infrastructure/passport/jwt.strategy';
 import { GoogleStrategy } from './infrastructure/passport/google.strategy';
@@ -30,6 +28,7 @@ import { RefreshTokenUseCase } from './app/use-cases/auth/refresh-token.use-case
 import { RecoverPasswordUseCase } from './app/use-cases/auth/recover-password.use-case';
 import { GetUserProfileUseCase } from './app/use-cases/user/get-user-profile.use-case';
 import { UpdateUserProfileUseCase } from './app/use-cases/user/update-user-profile.use-case';
+import { AccessTokenProvider } from '@resources/auth/domain/tokens/access.token';
 
 @Module({
   imports: [
@@ -59,9 +58,9 @@ import { UpdateUserProfileUseCase } from './app/use-cases/user/update-user-profi
     TokenRepository,
 
     // Tokens e estratégias
-    AccessToken,
-    RefreshToken,
-    RecoverPasswordToken,
+    AccessTokenProvider,
+    RefreshTokenProvider,
+    RecoverPasswordTokenProvider,
     JwtStrategy,
     GoogleStrategy,
 
@@ -80,8 +79,9 @@ import { UpdateUserProfileUseCase } from './app/use-cases/user/update-user-profi
 
   exports: [
     JwtModule,
-    AccessToken,
-    RefreshToken,
+    AccessTokenProvider,
+    RefreshTokenProvider,
+    RecoverPasswordTokenProvider,
     UserRepository,
     AccountRepository,
     TokenRepository,

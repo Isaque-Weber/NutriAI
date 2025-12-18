@@ -1,11 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { BaseUseCase } from '../../../../../@shared/abstractions/use-case/base.use-case';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { BaseUseCase } from '@shared/abstractions/use-case/base.use-case';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { TokenRepository } from '../../../domain/repositories/token.repository';
 import { TokenType } from '../../../domain/entities/token.entity';
-import Hasher from '../../../../../@shared/utils/hasher/hasher';
-import { AccessToken } from '../../../domain/tokens/access.token';
-import { RefreshToken } from '../../../domain/tokens/refresh.token';
+import Hasher from '@shared/utils/hasher/hasher';
+
+import { ACCESS_TOKEN } from '../../../domain/tokens/access.token';
+import { REFRESH_TOKEN } from '../../../domain/tokens/refresh.token';
+
+import type { AccessTokenFactory } from '../../../domain/tokens/access.token';
+import type { RefreshTokenFactory } from '../../../domain/tokens/refresh.token';
 
 export type SignUpUseCaseInput = {
   firstName: string;
@@ -29,6 +33,12 @@ export class SignUpUseCase extends BaseUseCase<
   constructor(
     private readonly userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
+
+    @Inject(ACCESS_TOKEN)
+    private readonly accessTokenFactory: AccessTokenFactory,
+
+    @Inject(REFRESH_TOKEN)
+    private readonly refreshTokenFactory: RefreshTokenFactory,
   ) {
     super();
   }
@@ -37,16 +47,16 @@ export class SignUpUseCase extends BaseUseCase<
     const { firstName, lastName, email, phoneNumber, password, avatarUrl } =
       input;
 
-    // Check if user already exists
+    // 1. Verificar se usuário já existe
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new ConflictException('Email already in use');
     }
 
-    // Hash password
+    // 2. Hash da senha
     const hashedPassword = await Hasher.generateHash(password);
 
-    // Create user
+    // 3. Criar usuário
     const user = await this.userRepository.createAndSave({
       firstName,
       lastName,
@@ -56,17 +66,16 @@ export class SignUpUseCase extends BaseUseCase<
       avatarUrl,
     });
 
-    const accessToken = AccessToken.generateToken({
+    const payload = {
       sub: user.id,
       organizationId: null,
-    });
+    };
 
-    const refreshToken = RefreshToken.generateToken({
-      sub: user.id,
-      organizationId: null,
-    });
+    // 4. Gerar tokens
+    const accessToken = this.accessTokenFactory.sign(payload);
+    const refreshToken = this.refreshTokenFactory.sign(payload);
 
-    // Save refresh token
+    // 5. Persistir refresh token
     await this.tokenRepository.createToken(
       user.id,
       TokenType.REFRESH_TOKEN,

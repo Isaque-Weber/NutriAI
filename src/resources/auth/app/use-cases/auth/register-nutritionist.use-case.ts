@@ -18,7 +18,7 @@ export class RegisterNutritionistUseCase {
 
     const password = await bcrypt.hash(input.password, 10);
 
-    const user = await this.userRepo.createUser({
+    const user = await this.userRepo.createAndSave({
       ...input,
       password,
       role: UserRole.NUTRITIONIST,
