@@ -4,10 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserRepository } from '../../../domain/repositories/user.repository';
-import {
+import GoogleCloudStorageService, {
   BucketFolder,
-  GoogleCloudStorageService,
-} from '../../../../../@shared/infrastructure/storage/google-cloud-storage.service';
+} from '@shared/infrastructure/storage/google-cloud-storage.service';
 
 export interface UploadAvatarRequest {
   userId: string;
