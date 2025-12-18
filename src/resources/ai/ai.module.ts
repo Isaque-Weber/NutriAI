@@ -6,10 +6,17 @@ import { OpenRouterProvider } from './infrastructure/providers/openrouter.provid
 import { GenerateReplyUseCase } from './app/use-cases/generate-reply.use-case';
 import { AiController } from './api/controllers/ai.controller';
 
+import { InferenceService } from './services/inference.service';
+
 @Module({
   imports: [TypeOrmModule.forFeature([AiMessage])],
   controllers: [AiController],
-  providers: [AiMessageRepository, OpenRouterProvider, GenerateReplyUseCase],
-  exports: [GenerateReplyUseCase],
+  providers: [
+    AiMessageRepository,
+    OpenRouterProvider,
+    GenerateReplyUseCase,
+    InferenceService,
+  ],
+  exports: [GenerateReplyUseCase, InferenceService],
 })
 export class AiModule {}

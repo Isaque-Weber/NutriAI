@@ -38,6 +38,8 @@ export const envValidationSchema = z.object({
   SENDGRID_TEMPLATE_ORGANIZATION_INVITE: z.string(),
   SENDGRID_TEMPLATE_SUPPORT_ASSIGNED: z.string(),
 
+  OPENROUTER_API_KEY: z.string(),
+
   FRONTEND_URL: z.string().url(),
 
   REDIS_HOST: z.string(),
