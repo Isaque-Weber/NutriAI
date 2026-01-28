@@ -16,7 +16,6 @@ import { ConversationsModule } from '@resources/conversations/conversations.modu
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, jwtConfig],
-      validationSchema: envValidationSchema,
     }),
 
     // Banco de dados Postgres via TypeORM
