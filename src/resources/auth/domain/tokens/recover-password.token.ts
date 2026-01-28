@@ -19,7 +19,7 @@ export const RecoverPasswordTokenProvider = {
     class RecoverPasswordToken extends BaseToken<RecoverPasswordTokenPayload> {
       constructor() {
         super(env.TOKEN_RECOVER_PASSWORD_SECRET, {
-          expiresIn: Number(env.TOKEN_ACCESS_EXPIRES_IN),
+          expiresIn: env.TOKEN_RECOVER_PASSWORD_EXPIRES_IN,
         });
       }
     }

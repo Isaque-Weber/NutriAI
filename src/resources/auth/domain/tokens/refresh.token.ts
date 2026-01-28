@@ -18,7 +18,7 @@ export const RefreshTokenProvider = {
     class RefreshToken extends BaseToken<RefreshTokenPayload> {
       constructor() {
         super(env.TOKEN_REFRESH_SECRET, {
-          expiresIn: Number(env.TOKEN_REFRESH_EXPIRES_IN),
+          expiresIn: env.TOKEN_REFRESH_EXPIRES_IN,
         });
       }
     }

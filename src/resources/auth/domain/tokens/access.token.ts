@@ -18,7 +18,7 @@ export const AccessTokenProvider = {
     class AccessToken extends BaseToken<AccessTokenPayload> {
       constructor() {
         super(env.TOKEN_ACCESS_SECRET, {
-          expiresIn: Number(env.TOKEN_ACCESS_EXPIRES_IN),
+          expiresIn: env.TOKEN_ACCESS_EXPIRES_IN,
         });
       }
     }
