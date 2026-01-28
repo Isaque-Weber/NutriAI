@@ -9,6 +9,7 @@ import { AiController } from './api/controllers/ai.controller';
 import { InferenceService } from './services/inference.service';
 import { KnowledgeService } from './services/knowledge.service';
 import { AutoRetrievalService } from './services/auto-retrieval.service';
+import { PdfProcessorService } from './services/pdf-processor.service';
 
 import { ClinicalModule } from '../clinical/clinical.module';
 
@@ -22,6 +23,7 @@ import { ClinicalModule } from '../clinical/clinical.module';
     InferenceService,
     KnowledgeService,
     AutoRetrievalService,
+    PdfProcessorService,
   ],
   exports: [GenerateReplyUseCase, InferenceService],
 })

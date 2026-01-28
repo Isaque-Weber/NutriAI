@@ -2,12 +2,14 @@ import { Injectable, HttpException } from '@nestjs/common';
 import { AiProvider } from '../../domain/interfaces/ai-provider.interface';
 import axios from 'axios';
 
+import { env } from '@config/envs/env.validation';
+
 @Injectable()
 export class OpenRouterProvider implements AiProvider {
   name = 'openrouter';
 
   private readonly API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-  private readonly API_KEY = process.env.OPENROUTER_API_KEY!;
+  private readonly API_KEY = env.OPENROUTER_API_KEY;
 
   async generateResponse(prompt: string): Promise<string> {
     try {
