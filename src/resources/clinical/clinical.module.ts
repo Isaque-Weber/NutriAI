@@ -21,6 +21,13 @@ import { AnthropometricAssessmentService } from './services/anthropometric-asses
 import { AnamnesisService } from './services/anamnesis.service';
 import { DietPlanService } from './services/dietplan.service';
 import { ClinicalNoteService } from './services/clinical-note.service';
+import { CreatePatientUseCase } from './app/use-cases/patient/create-patient.use-case';
+import { ListPatientsUseCase } from './app/use-cases/patient/list-patients.use-case';
+import { GetPatientByIdUseCase } from './app/use-cases/patient/get-patient-by-id.use-case';
+import { CreateAnamnesisUseCase } from './app/use-cases/anamnesis/create-anamnesis.use-case';
+import { CreateAssessmentUseCase } from './app/use-cases/assessment/create-assessment.use-case';
+import { CreateDietPlanUseCase } from './app/use-cases/diet-plan/create-diet-plan.use-case';
+import { CreateClinicalNoteUseCase } from './app/use-cases/clinical-note/create-clinical-note.use-case';
 
 @Module({
   imports: [
@@ -45,11 +52,21 @@ import { ClinicalNoteService } from './services/clinical-note.service';
     AnthropometricAssessmentRepository,
     DietPlanRepository,
     ClinicalNoteRepository,
+    ClinicalNoteRepository,
     PatientService,
     AnthropometricAssessmentService,
     AnamnesisService,
     DietPlanService,
     ClinicalNoteService,
+
+    // UseCases
+    CreatePatientUseCase,
+    ListPatientsUseCase,
+    GetPatientByIdUseCase,
+    CreateAnamnesisUseCase,
+    CreateAssessmentUseCase,
+    CreateDietPlanUseCase,
+    CreateClinicalNoteUseCase,
   ],
   exports: [
     PatientRepository,

@@ -29,6 +29,12 @@ import { RecoverPasswordUseCase } from './app/use-cases/auth/recover-password.us
 import { GetUserProfileUseCase } from './app/use-cases/user/get-user-profile.use-case';
 import { UpdateUserProfileUseCase } from './app/use-cases/user/update-user-profile.use-case';
 import { AccessTokenProvider } from '@resources/auth/domain/tokens/access.token';
+import { RegisterNutritionistUseCase } from './app/use-cases/auth/register-nutritionist.use-case';
+import { CreatePatientUseCase } from './app/use-cases/user/create-patient.use-case';
+import { UploadAvatarUseCase } from './app/use-cases/user/upload-avatar.use-case';
+import { DeleteUserUseCase } from './app/use-cases/user/delete-user.use-case';
+import { SetPasswordUseCase } from './app/use-cases/user/set-password.use-case';
+import GoogleCloudStorageService from '@shared/infrastructure/storage/google-cloud-storage.service';
 
 @Module({
   imports: [
@@ -75,6 +81,12 @@ import { AccessTokenProvider } from '@resources/auth/domain/tokens/access.token'
     RecoverPasswordUseCase,
     GetUserProfileUseCase,
     UpdateUserProfileUseCase,
+    RegisterNutritionistUseCase,
+    CreatePatientUseCase,
+    UploadAvatarUseCase,
+    DeleteUserUseCase,
+    SetPasswordUseCase,
+    GoogleCloudStorageService,
   ],
 
   exports: [
